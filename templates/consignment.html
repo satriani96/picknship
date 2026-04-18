@@ -1,0 +1,88 @@
+{{define "consignment"}}
+<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none max-w-[800px] p-8 print:p-6 text-[12px] text-gray-900">
+  <header class="flex items-start justify-between border-b-2 border-wesco pb-4">
+    <div class="flex items-center gap-3">
+      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-14 w-14 object-contain" onerror="this.style.display='none'" />
+      <div>
+        <div class="text-xl font-bold text-wesco">Wesco Seeds Ltd</div>
+        <div class="text-[11px] text-gray-600">PO Box 123, Christchurch · 03 555 0100 · sales@wescoseeds.co.nz</div>
+      </div>
+    </div>
+    <div class="text-right">
+      <div class="text-2xl font-bold uppercase tracking-wide text-gray-800">Consignment Note</div>
+      <div class="text-[11px] text-gray-600 mt-1">Carrier: <strong>{{or .Order.ShipVia "Mainfreight"}}</strong></div>
+      <div class="text-[11px] text-gray-600">Connote #: <strong>{{.ConnoteNo}}</strong></div>
+      <div class="text-[11px] text-gray-600">Date: <strong>{{.PrintDate}}</strong></div>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-2 gap-6 mt-5">
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Sender</div>
+      <div class="font-semibold">Wesco Seeds Ltd</div>
+      <div>123 Industrial Road</div>
+      <div>Christchurch 8042</div>
+      <div>New Zealand</div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Receiver</div>
+      <div class="font-semibold">{{.Order.Customer.CompanyName}}</div>
+      <div>{{.Order.Customer.AddressLine1}}</div>
+      {{if .Order.Customer.Suburb}}<div>{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
+      <div>{{or .Order.Customer.Country "New Zealand"}}</div>
+      <div class="mt-1 text-[11px] text-gray-600">Customer #: {{.Order.Customer.DisplayID}}</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-4 gap-4 mt-5 border-y border-gray-200 py-3 text-center">
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500">Reference</div>
+      <div class="font-semibold">{{.Order.Number}}</div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500">Items</div>
+      <div class="font-semibold">{{len .PickedRows}}</div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500">Total weight</div>
+      <div class="font-semibold tabular-nums">{{printf "%.1f" .TotalWeightKg}} kg</div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500">Service</div>
+      <div class="font-semibold">Standard freight</div>
+    </div>
+  </div>
+
+  <table class="w-full mt-4 text-left">
+    <thead>
+      <tr class="text-[10px] uppercase tracking-wider text-gray-500 border-b border-gray-200">
+        <th class="py-2 w-16">Code</th>
+        <th class="py-2">Description</th>
+        <th class="py-2 text-right w-24">Qty</th>
+        <th class="py-2 text-right w-16">UOM</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .PickedRows}}
+      <tr class="border-b border-gray-100 align-top">
+        <td class="py-2 font-mono text-[11px]">{{.Item.Number}}</td>
+        <td class="py-2">{{.Item.Name}}</td>
+        <td class="py-2 text-right tabular-nums">{{printf "%g" .QtyOrdered}}</td>
+        <td class="py-2 text-right">{{.Item.UOM}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+
+  <div class="grid grid-cols-2 gap-8 mt-10 text-[11px]">
+    <div>
+      <div class="border-t border-gray-400 pt-1">Sender signature / date</div>
+    </div>
+    <div>
+      <div class="border-t border-gray-400 pt-1">Receiver signature / date</div>
+    </div>
+  </div>
+
+  <div class="mt-6 text-[10px] text-gray-500 text-center">Goods received in apparent good order and condition unless noted above.</div>
+</section>
+{{end}}

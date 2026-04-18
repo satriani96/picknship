@@ -1,0 +1,42 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f4d2a" />
+  <title>{{.Title}} · PicknShip</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <link rel="icon" href="/static/Wesco_Primary_RGB.webp" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wesco: {
+              DEFAULT: '#0f4d2a',
+              dark:    '#0a3a1f',
+              light:   '#e7f1ea',
+              accent:  '#f4b400'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body { -webkit-tap-highlight-color: transparent; }
+    .mix-group { background: #fff8db; }
+    .mix-group-bar { background: #f4b400; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+      .page { page-break-after: always; }
+      .page:last-child { page-break-after: auto; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  {{template "content" .}}
+</body>
+</html>{{end}}

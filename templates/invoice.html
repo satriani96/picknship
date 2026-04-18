@@ -1,0 +1,83 @@
+{{define "invoice"}}
+<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none max-w-[800px] p-8 print:p-6 text-[12px] text-gray-900">
+  <header class="flex items-start justify-between border-b-2 border-wesco pb-4">
+    <div class="flex items-center gap-3">
+      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-14 w-14 object-contain" onerror="this.style.display='none'" />
+      <div>
+        <div class="text-xl font-bold text-wesco">Wesco Seeds Ltd</div>
+        <div class="text-[11px] text-gray-600">PO Box 123, Christchurch · 03 555 0100 · sales@wescoseeds.co.nz</div>
+        <div class="text-[11px] text-gray-600">GST #: 123-456-789</div>
+      </div>
+    </div>
+    <div class="text-right">
+      <div class="text-2xl font-bold uppercase tracking-wide text-gray-800">Tax Invoice</div>
+      <div class="text-[11px] text-gray-600 mt-1">Invoice #: <strong>{{.InvoiceNo}}</strong></div>
+      <div class="text-[11px] text-gray-600">Order: <strong>{{.Order.Number}}</strong></div>
+      <div class="text-[11px] text-gray-600">Date: <strong>{{.PrintDate}}</strong></div>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-2 gap-6 mt-5">
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Bill to</div>
+      <div class="font-semibold">{{.Order.Customer.CompanyName}}</div>
+      <div>{{.Order.Customer.AddressLine1}}</div>
+      {{if .Order.Customer.Suburb}}<div>{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
+      <div>{{or .Order.Customer.Country "New Zealand"}}</div>
+      <div class="mt-1 text-[11px] text-gray-600">Customer #: {{.Order.Customer.DisplayID}}</div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Terms</div>
+      <div>{{or .Order.Customer.Terms "20th of following month"}}</div>
+      <div class="mt-2 text-[11px] text-gray-600">Carrier: {{or .Order.ShipVia "Mainfreight"}}</div>
+      <div class="text-[11px] text-gray-600">Connote #: {{.ConnoteNo}}</div>
+    </div>
+  </div>
+
+  <table class="w-full mt-5 text-left">
+    <thead>
+      <tr class="text-[10px] uppercase tracking-wider text-gray-500 border-b border-gray-200">
+        <th class="py-2 w-16">Code</th>
+        <th class="py-2">Description</th>
+        <th class="py-2 text-right w-20">Qty</th>
+        <th class="py-2 text-right w-14">UOM</th>
+        <th class="py-2 text-right w-24">Unit price</th>
+        <th class="py-2 text-right w-24">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .InvoiceRows}}
+      <tr class="border-b border-gray-100 align-top">
+        <td class="py-2 font-mono text-[11px]">{{.Item.Number}}</td>
+        <td class="py-2">{{.Item.Name}}</td>
+        <td class="py-2 text-right tabular-nums">{{printf "%g" .QtyOrdered}}</td>
+        <td class="py-2 text-right">{{.Item.UOM}}</td>
+        <td class="py-2 text-right tabular-nums">${{printf "%.2f" .UnitPrice}}</td>
+        <td class="py-2 text-right tabular-nums">${{printf "%.2f" (mul .QtyOrdered .UnitPrice)}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+
+  <div class="flex justify-end mt-4">
+    <div class="w-72 text-[12px]">
+      <div class="flex justify-between py-1">
+        <span class="text-gray-600">Subtotal (ex GST)</span>
+        <span class="tabular-nums">${{printf "%.2f" .SubTotal}}</span>
+      </div>
+      <div class="flex justify-between py-1">
+        <span class="text-gray-600">GST 15%</span>
+        <span class="tabular-nums">${{printf "%.2f" .GST}}</span>
+      </div>
+      <div class="flex justify-between py-2 border-t-2 border-wesco mt-1 text-base font-bold">
+        <span>Total NZD</span>
+        <span class="tabular-nums">${{printf "%.2f" .Total}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8 text-[11px] text-gray-600">
+    Please pay to: <strong>Wesco Seeds Ltd</strong> · BNZ 02-0800-0123456-00 · reference invoice number.
+  </div>
+</section>
+{{end}}
