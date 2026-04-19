@@ -1,2 +1,4 @@
 picknship
 *.log
+
+.env
