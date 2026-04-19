@@ -1,73 +1,96 @@
 {{define "packing"}}
-<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none max-w-[800px] p-8 print:p-6 text-[12px] text-gray-900">
-  <header class="flex items-start justify-between border-b-2 border-wesco pb-4">
-    <div class="flex items-center gap-3">
-      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-14 w-14 object-contain" onerror="this.style.display='none'" />
-      <div>
-        <div class="text-xl font-bold text-wesco">Wesco Seeds Ltd</div>
-        <div class="text-[11px] text-gray-600">PO Box 123, Christchurch · 03 555 0100 · sales@wescoseeds.co.nz</div>
-      </div>
+{{$co := .Company}}
+<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none w-[210mm] p-10 print:p-10 text-[11px] text-gray-900">
+  <header class="flex items-start justify-between gap-6">
+    <div class="border border-gray-300 p-2 w-[260px]">
+      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-16 mx-auto object-contain" />
     </div>
-    <div class="text-right">
-      <div class="text-2xl font-bold uppercase tracking-wide text-gray-800">Packing Slip</div>
-      <div class="text-[11px] text-gray-600 mt-1">Order: <strong>{{.Order.Number}}</strong></div>
-      <div class="text-[11px] text-gray-600">Date: <strong>{{.PrintDate}}</strong></div>
+    <div class="text-right text-[10px] leading-tight text-gray-700">
+      <div class="font-semibold text-gray-900">{{$co.Name}}</div>
+      <div>{{$co.POBox}}, {{$co.Town}} {{$co.PostCode}}</div>
+      <div>Ph {{$co.Phone}} · {{$co.Freephone}}</div>
+      <div>{{$co.Email}}</div>
     </div>
   </header>
 
-  <div class="grid grid-cols-2 gap-6 mt-5">
-    <div>
-      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Ship to</div>
-      <div class="font-semibold">{{.Order.Customer.CompanyName}}</div>
+  <div class="mt-6 grid grid-cols-2 gap-10">
+    <div class="text-[11px] leading-snug">
+      <div class="grid grid-cols-[110px_1fr] gap-y-1">
+        <div class="font-semibold">Attention:</div>
+        <div></div>
+        <div></div>
+        <div class="font-semibold uppercase">{{.Order.Customer.CompanyName}}</div>
+        <div class="font-semibold">Phone No.</div>
+        <div>{{.Order.Customer.Phone}}</div>
+        <div class="font-semibold">Email:</div>
+        <div>{{.Order.Customer.Email}}</div>
+        <div class="font-semibold">Reference/Project:</div>
+        <div>{{.Order.Customer.Reference}}</div>
+      </div>
+
+      <div class="mt-4 font-semibold">Customer Shipping Address &amp; Contact:</div>
+      <div>{{.Order.Customer.Attention}}</div>
       <div>{{.Order.Customer.AddressLine1}}</div>
       {{if .Order.Customer.Suburb}}<div>{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
-      <div>{{or .Order.Customer.Country "New Zealand"}}</div>
     </div>
-    <div>
-      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Carrier</div>
-      <div>{{or .Order.ShipVia "Mainfreight"}}</div>
-      <div class="text-[11px] text-gray-600 mt-2">Connote #: {{.ConnoteNo}}</div>
-      <div class="text-[11px] text-gray-600">Customer #: {{.Order.Customer.DisplayID}}</div>
+
+    <div class="text-right">
+      <div class="text-2xl font-bold tracking-wide">FACTORY/PICKING LIST</div>
+      <div class="mt-3 text-[11px] grid grid-cols-[1fr_auto] gap-x-2 gap-y-1 text-left max-w-[260px] ml-auto">
+        <div class="font-semibold">Date:</div><div>{{.PrintDate}}</div>
+        <div class="font-semibold">Number:</div><div>{{.Order.Number}}</div>
+        <div class="font-semibold">Sales Representative:</div><div>{{.Order.SalesRepName}}</div>
+        <div class="font-semibold">Courier:</div><div>{{.Order.Service}}</div>
+        <div class="font-semibold">Courier Service:</div><div>{{.Order.ShipVia}}</div>
+      </div>
     </div>
   </div>
 
-  <table class="w-full mt-5 text-left">
+  <table class="w-full mt-8 border-collapse">
     <thead>
-      <tr class="text-[10px] uppercase tracking-wider text-gray-500 border-b border-gray-200">
-        <th class="py-2 w-16">Code</th>
-        <th class="py-2">Description</th>
-        <th class="py-2 text-right w-24">Ordered</th>
-        <th class="py-2 text-right w-24">Picked</th>
-        <th class="py-2 text-right w-16">UOM</th>
+      <tr class="border-b border-gray-400 text-left">
+        <th class="py-2 font-semibold w-[70px]">Qty</th>
+        <th class="py-2 font-semibold w-[180px]">Item</th>
+        <th class="py-2 font-semibold">Description</th>
+        <th class="py-2 font-semibold text-center w-[80px]">Qty<br/>Packed</th>
+        <th class="py-2 font-semibold text-center w-[80px]">Check</th>
       </tr>
     </thead>
     <tbody>
       {{range .Rows}}
-      <tr class="border-b border-gray-100 align-top {{if .MixGroupID}}bg-amber-50{{end}}">
-        <td class="py-2 font-mono text-[11px]">{{.Line.Item.Number}}</td>
-        <td class="py-2">
-          {{.Line.Item.Name}}
-          {{if .Line.Item.IsMixParent}}<span class="ml-1 text-[10px] uppercase tracking-wider text-amber-800 bg-amber-200 rounded px-1 py-0.5">Mix</span>{{end}}
-          {{if .Line.Item.IsMixChild}}<span class="ml-1 text-[10px] uppercase tracking-wider text-amber-800 bg-amber-100 rounded px-1 py-0.5">Component</span>{{end}}
+      <tr class="align-top {{if .MixGroupID}}mix-group{{end}}">
+        <td class="py-1 tabular-nums">{{printf "%.2f" .Line.QtyOrdered}}</td>
+        <td class="py-1 font-semibold uppercase">
+          {{if .Line.Item.IsMixParent}}<span class="bg-amber-200 px-1">{{.Line.Item.Number}}</span>{{else}}{{.Line.Item.Number}}{{end}}
         </td>
-        <td class="py-2 text-right tabular-nums">{{printf "%g" .Line.QtyOrdered}}</td>
-        <td class="py-2 text-right tabular-nums {{if lt .Picked .Line.QtyOrdered}}text-amber-700 font-semibold{{end}}">{{printf "%g" .Picked}}</td>
-        <td class="py-2 text-right">{{.Line.Item.UOM}}</td>
+        <td class="py-1 uppercase">{{.Line.Item.Name}}</td>
+        <td class="py-1 text-center">
+          {{if .Line.Item.IsMixParent}}
+            <span class="text-gray-400">—</span>
+          {{else}}
+            <span class="inline-block border-b border-gray-500 w-12">&nbsp;{{if gt .Picked 0.0}}{{printf "%g" .Picked}}{{end}}</span>
+          {{end}}
+        </td>
+        <td class="py-1 text-center">
+          {{if .Line.Item.IsMixParent}}
+            <span class="text-gray-400">—</span>
+          {{else}}
+            <span class="inline-block border-b border-gray-500 w-12">&nbsp;</span>
+          {{end}}
+        </td>
       </tr>
       {{end}}
     </tbody>
   </table>
 
-  <div class="mt-6 text-[11px] text-gray-600">
-    <div><strong>Note:</strong> highlighted rows belong to a seed-mix BOM and are picked together.</div>
-  </div>
+  <div class="mt-2 text-[10px] text-gray-600 italic">Highlighted rows belong to a seed-mix BOM and are picked together.</div>
 
-  <div class="grid grid-cols-2 gap-8 mt-10 text-[11px]">
+  <div class="grid grid-cols-2 gap-12 mt-16 text-[11px]">
     <div>
-      <div class="border-t border-gray-400 pt-1">Picked by</div>
+      <div class="border-t border-gray-500 pt-1">Picked by / date</div>
     </div>
     <div>
-      <div class="border-t border-gray-400 pt-1">Checked by</div>
+      <div class="border-t border-gray-500 pt-1">Checked by / date</div>
     </div>
   </div>
 </section>

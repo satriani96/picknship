@@ -1,83 +1,144 @@
 {{define "invoice"}}
-<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none max-w-[800px] p-8 print:p-6 text-[12px] text-gray-900">
-  <header class="flex items-start justify-between border-b-2 border-wesco pb-4">
-    <div class="flex items-center gap-3">
-      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-14 w-14 object-contain" onerror="this.style.display='none'" />
-      <div>
-        <div class="text-xl font-bold text-wesco">Wesco Seeds Ltd</div>
-        <div class="text-[11px] text-gray-600">PO Box 123, Christchurch · 03 555 0100 · sales@wescoseeds.co.nz</div>
-        <div class="text-[11px] text-gray-600">GST #: 123-456-789</div>
-      </div>
+{{$co := .Company}}
+<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none w-[210mm] p-10 print:p-10 text-[11px] text-gray-900 relative min-h-[280mm]">
+
+  <header class="flex items-start justify-between gap-6">
+    <div class="border border-gray-300 p-3 w-[300px]">
+      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-20 mx-auto object-contain" />
     </div>
-    <div class="text-right">
-      <div class="text-2xl font-bold uppercase tracking-wide text-gray-800">Tax Invoice</div>
-      <div class="text-[11px] text-gray-600 mt-1">Invoice #: <strong>{{.InvoiceNo}}</strong></div>
-      <div class="text-[11px] text-gray-600">Order: <strong>{{.Order.Number}}</strong></div>
-      <div class="text-[11px] text-gray-600">Date: <strong>{{.PrintDate}}</strong></div>
+    <div class="text-right text-[11px] leading-tight">
+      <div class="border border-gray-300 px-3 py-2 inline-block min-w-[180px] text-right">
+        <div class="font-semibold">{{$co.Name}}</div>
+        <div>{{$co.POBox}}</div>
+        <div>{{$co.Town}} {{$co.PostCode}}</div>
+      </div>
+      <div class="mt-2 border border-gray-300 px-3 py-2 inline-block min-w-[220px] text-right">
+        <div>Ph: {{$co.Phone}}</div>
+        <div>Freephone: {{$co.Freephone}}</div>
+        <div>E: {{$co.Email}}</div>
+        <div>W: {{$co.Web}}</div>
+      </div>
     </div>
   </header>
 
-  <div class="grid grid-cols-2 gap-6 mt-5">
+  <div class="grid grid-cols-2 gap-8 mt-8">
     <div>
-      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Bill to</div>
-      <div class="font-semibold">{{.Order.Customer.CompanyName}}</div>
-      <div>{{.Order.Customer.AddressLine1}}</div>
-      {{if .Order.Customer.Suburb}}<div>{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
-      <div>{{or .Order.Customer.Country "New Zealand"}}</div>
-      <div class="mt-1 text-[11px] text-gray-600">Customer #: {{.Order.Customer.DisplayID}}</div>
+      <div class="border border-gray-400 px-2 py-0.5 inline-block font-bold">Bill To:</div>
+      <div class="border border-gray-300 px-3 py-3 mt-1 min-h-[80px]">
+        <div class="font-semibold uppercase">{{.Order.Customer.CompanyName}}</div>
+        {{if .Order.Customer.AddressLine1}}<div class="uppercase">{{.Order.Customer.AddressLine1}}</div>{{end}}
+        {{if .Order.Customer.Suburb}}<div class="uppercase">{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
+      </div>
     </div>
     <div>
-      <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Terms</div>
-      <div>{{or .Order.Customer.Terms "20th of following month"}}</div>
-      <div class="mt-2 text-[11px] text-gray-600">Carrier: {{or .Order.ShipVia "Mainfreight"}}</div>
-      <div class="text-[11px] text-gray-600">Connote #: {{.ConnoteNo}}</div>
+      <div class="border border-gray-400 px-2 py-0.5 inline-block font-bold">Ship To:</div>
+      <div class="border border-gray-300 px-3 py-3 mt-1 min-h-[80px]">
+        <div class="uppercase">{{.Order.Customer.AddressLine1}}</div>
+        {{if .Order.Customer.Suburb}}<div class="uppercase">{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
+        <div>{{or .Order.Customer.Country "New Zealand"}}</div>
+      </div>
     </div>
   </div>
 
-  <table class="w-full mt-5 text-left">
+  <div class="grid grid-cols-2 gap-8 mt-4 items-end">
+    <div class="flex items-end gap-2">
+      <div class="border border-gray-400 px-2 py-1 font-bold text-base">Tax Invoice</div>
+      <div class="border border-gray-300 px-3 py-1 font-bold text-base flex-1">{{.InvoiceNo}}</div>
+    </div>
+    <div class="flex items-end gap-2">
+      <div class="border border-gray-400 px-2 py-1 font-bold text-base">Date</div>
+      <div class="border border-gray-300 px-3 py-1 font-bold text-base flex-1">{{.InvoiceDate}}</div>
+    </div>
+  </div>
+  <div class="text-[11px] mt-1">GST Number: {{$co.GSTNumber}}</div>
+
+  <table class="w-full mt-4 border-collapse">
     <thead>
-      <tr class="text-[10px] uppercase tracking-wider text-gray-500 border-b border-gray-200">
-        <th class="py-2 w-16">Code</th>
-        <th class="py-2">Description</th>
-        <th class="py-2 text-right w-20">Qty</th>
-        <th class="py-2 text-right w-14">UOM</th>
-        <th class="py-2 text-right w-24">Unit price</th>
-        <th class="py-2 text-right w-24">Amount</th>
+      <tr>
+        <th class="border border-gray-400 px-2 py-1 text-left font-normal w-[150px]">Order Number</th>
+        <th class="border border-gray-400 px-2 py-1 text-left font-normal w-[150px]">Ship Via</th>
+        <th class="border border-gray-400 px-2 py-1 text-left font-normal w-[120px]">Due Date</th>
+        <th class="border border-gray-400 px-2 py-1 text-left font-normal">Terms</th>
+      </tr>
+      <tr>
+        <td class="border border-gray-300 px-2 py-1">{{.Order.Number}}</td>
+        <td class="border border-gray-300 px-2 py-1">{{.Order.ShipVia}}</td>
+        <td class="border border-gray-300 px-2 py-1">{{.DueDate}}</td>
+        <td class="border border-gray-300 px-2 py-1">{{.Order.Customer.Terms}}</td>
+      </tr>
+    </thead>
+  </table>
+
+  <table class="w-full mt-3 border-collapse">
+    <thead>
+      <tr class="bg-gray-50">
+        <th class="border border-gray-400 px-2 py-1 text-left font-semibold w-[60px]">QTY</th>
+        <th class="border border-gray-400 px-2 py-1 text-left font-semibold w-[60px]">UNIT</th>
+        <th class="border border-gray-400 px-2 py-1 text-left font-semibold">DESCRIPTION</th>
+        <th class="border border-gray-400 px-2 py-1 text-right font-semibold w-[100px]">UNIT PRICE</th>
+        <th class="border border-gray-400 px-2 py-1 text-right font-semibold w-[100px]">PRICE</th>
       </tr>
     </thead>
     <tbody>
       {{range .InvoiceRows}}
-      <tr class="border-b border-gray-100 align-top">
-        <td class="py-2 font-mono text-[11px]">{{.Item.Number}}</td>
-        <td class="py-2">{{.Item.Name}}</td>
-        <td class="py-2 text-right tabular-nums">{{printf "%g" .QtyOrdered}}</td>
-        <td class="py-2 text-right">{{.Item.UOM}}</td>
-        <td class="py-2 text-right tabular-nums">${{printf "%.2f" .UnitPrice}}</td>
-        <td class="py-2 text-right tabular-nums">${{printf "%.2f" (mul .QtyOrdered .UnitPrice)}}</td>
+      <tr>
+        <td class="border-x border-gray-300 px-2 py-0.5 tabular-nums">{{if gt .QtyOrdered 0.0}}{{printf "%g" .QtyOrdered}}{{else}}{{end}}</td>
+        <td class="border-x border-gray-300 px-2 py-0.5">{{.Item.UOM}}</td>
+        <td class="border-x border-gray-300 px-2 py-0.5 uppercase">{{.Item.Name}}</td>
+        <td class="border-x border-gray-300 px-2 py-0.5 text-right tabular-nums">{{if gt .UnitPrice 0.0}}${{printf "%.2f" .UnitPrice}}{{end}}</td>
+        <td class="border-x border-gray-300 px-2 py-0.5 text-right tabular-nums">{{if gt (mul .QtyOrdered .UnitPrice) 0.0}}${{printf "%.2f" (mul .QtyOrdered .UnitPrice)}}{{end}}</td>
       </tr>
       {{end}}
+      {{range .Pad}}
+      <tr>
+        <td class="border-x border-gray-300 px-2 py-0.5">&nbsp;</td>
+        <td class="border-x border-gray-300 px-2 py-0.5"></td>
+        <td class="border-x border-gray-300 px-2 py-0.5"></td>
+        <td class="border-x border-gray-300 px-2 py-0.5"></td>
+        <td class="border-x border-gray-300 px-2 py-0.5"></td>
+      </tr>
+      {{end}}
+      <tr>
+        <td colspan="5" class="border-t border-gray-400 p-0"></td>
+      </tr>
     </tbody>
   </table>
 
-  <div class="flex justify-end mt-4">
-    <div class="w-72 text-[12px]">
-      <div class="flex justify-between py-1">
-        <span class="text-gray-600">Subtotal (ex GST)</span>
-        <span class="tabular-nums">${{printf "%.2f" .SubTotal}}</span>
-      </div>
-      <div class="flex justify-between py-1">
-        <span class="text-gray-600">GST 15%</span>
-        <span class="tabular-nums">${{printf "%.2f" .GST}}</span>
-      </div>
-      <div class="flex justify-between py-2 border-t-2 border-wesco mt-1 text-base font-bold">
-        <span>Total NZD</span>
-        <span class="tabular-nums">${{printf "%.2f" .Total}}</span>
-      </div>
+  <div class="grid grid-cols-2 gap-4 mt-1">
+    <div class="border border-gray-300 min-h-[110px]"></div>
+    <div>
+      <table class="w-full border-collapse">
+        <tbody>
+          <tr>
+            <td class="border border-gray-300 px-2 py-1 text-right">Total before GST</td>
+            <td class="border border-gray-300 px-2 py-1 text-right tabular-nums w-[100px]">${{printf "%.2f" .SubTotal}}</td>
+          </tr>
+          <tr>
+            <td class="border border-gray-300 px-2 py-1 text-right">Freight</td>
+            <td class="border border-gray-300 px-2 py-1 text-right tabular-nums">${{printf "%.2f" .FreightExc}}</td>
+          </tr>
+          <tr>
+            <td class="border border-gray-300 px-2 py-1 text-right">GST</td>
+            <td class="border border-gray-300 px-2 py-1 text-right tabular-nums">${{printf "%.2f" .GST}}</td>
+          </tr>
+          <tr>
+            <td class="border border-gray-300 px-2 py-1 text-right">Paid to date:</td>
+            <td class="border border-gray-300 px-2 py-1 text-right tabular-nums">$0.00</td>
+          </tr>
+          <tr>
+            <td class="border border-gray-400 px-2 py-1 text-right font-bold">Total Owing:</td>
+            <td class="border border-gray-400 px-2 py-1 text-right tabular-nums font-bold">${{printf "%.2f" .Total}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <div class="mt-8 text-[11px] text-gray-600">
-    Please pay to: <strong>Wesco Seeds Ltd</strong> · BNZ 02-0800-0123456-00 · reference invoice number.
+  <div class="text-center mt-10">
+    <div class="font-semibold">{{$co.BankName}}</div>
+    <div class="border border-gray-300 inline-block px-6 py-1 mt-1">Bank Account No: {{$co.BankAcct}}</div>
   </div>
+
+  <div class="absolute bottom-6 left-10 text-[10px] text-gray-600">Page 1 of 1</div>
 </section>
 {{end}}

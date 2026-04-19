@@ -44,6 +44,7 @@ var sharedTemplates = []string{
 	"templates/invoice.html",
 }
 
+
 // pageFiles maps a page key to its file. Each page must define "content".
 var pageFiles = map[string]string{
 	"orders.html":    "templates/orders.html",
@@ -249,49 +250,89 @@ func (s *Server) renderDocuments(w http.ResponseWriter, r *http.Request, o model
 	rows := buildRows(o, picks)
 	picked := s.Store.PickedOrder(o)
 
-	pickedRows := []models.OrderLine{}
+	// Lines that contributed to the pick — used for connote weight + count.
+	pickedLines := []models.OrderLine{}
 	for _, l := range picked.Lines {
-		if l.QtyOrdered > 0 || l.Item.IsMixParent {
-			pickedRows = append(pickedRows, l)
+		if l.QtyOrdered > 0 {
+			pickedLines = append(pickedLines, l)
 		}
 	}
 
+	// Invoice rows: every original line at the picked qty (so partial picks
+	// flow through to the invoice). Skip a separate freight line — freight
+	// is shown in its own row in the totals box.
 	invoiceRows := []models.OrderLine{}
 	subTotal := 0.0
+	freight := 0.0
 	for _, l := range picked.Lines {
-		if l.QtyOrdered <= 0 && !l.Item.IsMixParent {
+		if strings.EqualFold(l.Item.Number, "FREIGHT") || strings.EqualFold(l.Item.Number, "FRT") {
+			freight += l.QtyOrdered * l.UnitPrice
 			continue
 		}
 		invoiceRows = append(invoiceRows, l)
 		subTotal += l.QtyOrdered * l.UnitPrice
 	}
-	subTotal += o.FreightExc
-	gst := subTotal * 0.15
-	total := subTotal + gst
+	freight += o.FreightExc
+	gst := (subTotal + freight) * 0.15
+	total := subTotal + freight + gst
 
+	// Pad invoice table out to a consistent visual height.
+	pad := 14 - len(invoiceRows)
+	if pad < 0 {
+		pad = 0
+	}
+	padRows := make([]struct{}, pad)
+
+	// Mainfreight item count + cubic + weight (rough estimate).
 	totalWeight := 0.0
-	for _, l := range pickedRows {
+	for _, l := range pickedLines {
 		if strings.EqualFold(l.Item.UOM, "kg") {
 			totalWeight += l.QtyOrdered
 		}
 	}
+	// 1 pallet per 1000 kg, minimum 1.
+	numItems := int(totalWeight/1000.0) + 1
+	cubicM := float64(numItems) * 1.27 // assume ~1.27 m³ per pallet
 
-	connote := fmt.Sprintf("MFL%s", strings.TrimPrefix(o.Number, "SO-"))
-	invoiceNo := fmt.Sprintf("INV-%s", strings.TrimPrefix(o.Number, "SO-"))
+	connoteBase := strings.TrimPrefix(o.Number, "S-")
+	connoteBase = strings.TrimPrefix(connoteBase, "SO-")
+	connote := fmt.Sprintf("FWM%s", connoteBase)
+	invoiceNo := fmt.Sprintf("I-%s", connoteBase)
+
+	dueDate := o.DueDate
+	if dueDate.IsZero() {
+		dueDate = time.Now().AddDate(0, 1, 20)
+	}
+
+	// Mainfreight's example uses 5-letter sender / charge codes derived from
+	// the customer name. Use a stable, uppercased prefix.
+	chargeTo := strings.ToUpper(o.Customer.CompanyName)
+
+	blank := make([]struct{}, 8)
 
 	s.render(w, "documents.html", "layout", map[string]any{
 		"Title":         "Documents · " + o.Number,
 		"Order":         o,
+		"Company":       models.Wesco,
 		"Rows":          rows,
-		"PickedRows":    pickedRows,
 		"InvoiceRows":   invoiceRows,
+		"Pad":           padRows,
 		"SubTotal":      subTotal,
+		"FreightExc":    freight,
 		"GST":           gst,
 		"Total":         total,
 		"TotalWeightKg": totalWeight,
+		"NumItems":      numItems,
+		"CubicMeters":   cubicM,
+		"BlankRows":     blank,
 		"ConnoteNo":     connote,
 		"InvoiceNo":     invoiceNo,
+		"InvoiceDate":   time.Now().Format("02/01/2006"),
+		"DueDate":       dueDate.Format("02/01/2006"),
+		"ConnoteDate":   time.Now().Format("02-Jan-06"),
 		"PrintDate":     time.Now().Format("2 Jan 2006"),
+		"SenderCode":    "WESCO",
+		"ChargeTo":      chargeTo,
 	})
 }
 
