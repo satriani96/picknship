@@ -1,0 +1,171 @@
+{{define "consignment"}}
+{{template "conote_copy" .}}
+{{template "conote_copy" .}}
+{{end}}
+
+{{define "conote_copy"}}
+{{$co := .Company}}
+<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none w-[210mm] p-8 print:p-6 text-[10px] text-gray-900">
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center">
+      <div class="text-blue-700 font-black italic text-3xl tracking-tight" style="font-family: 'Arial Black', sans-serif;">
+        MAINFREIGHT
+      </div>
+      <div class="ml-1 text-blue-700 text-3xl">→</div>
+    </div>
+    <div class="flex-1 text-right text-[11px]">
+      <div class="font-semibold uppercase">{{or .Order.Customer.Attention .Order.Customer.CompanyName}}</div>
+      <div>Mainfreight &nbsp; <span class="font-semibold">DATE</span> {{.ConnoteDate}}</div>
+    </div>
+    <div class="font-mono text-sm tracking-tight">
+      <div class="border-2 border-black px-1 py-0.5 text-center">|||||| |||| ||| ||| ||||| ||||||</div>
+      <div class="text-center font-bold">{{.ConnoteNo}}</div>
+    </div>
+  </div>
+
+  <table class="w-full mt-2 border border-black border-collapse">
+    <tr>
+      <td class="border border-black px-2 py-1 font-bold w-[140px]">SENDER CODE</td>
+      <td class="border border-black px-2 py-1 w-[180px]">{{.SenderCode}}</td>
+      <td class="border border-black px-2 py-1 font-bold w-[120px]">CHARGE TO</td>
+      <td class="border border-black px-2 py-1 w-[180px]">{{.ChargeTo}}</td>
+      <td class="border border-black px-2 py-1 font-bold w-[140px]">CHARGE CODE</td>
+      <td class="border border-black px-2 py-1">{{.SenderCode}}</td>
+    </tr>
+    <tr>
+      <td class="border border-black px-2 py-1 font-bold align-top">SENDER<br/>STREET ADDRESS</td>
+      <td class="border border-black px-2 py-1 align-top" colspan="3">
+        <div>{{$co.Name}}</div>
+        <div>{{$co.SenderStreet}}, {{$co.SenderTown}} {{$co.SenderPost}}</div>
+      </td>
+      <td class="border border-black px-2 py-1 font-bold align-top">RECEIVER<br/>STREET ADDRESS</td>
+      <td class="border border-black px-2 py-1 align-top">
+        <div>{{.Order.Customer.CompanyName}}</div>
+        <div>{{.Order.Customer.AddressLine1}}</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="border border-black px-2 py-1 font-bold">CITY</td>
+      <td class="border border-black px-2 py-1">{{$co.SenderTown}}</td>
+      <td class="border border-black px-2 py-1 font-bold">PHONE</td>
+      <td class="border border-black px-2 py-1">{{$co.Phone}}</td>
+      <td class="border border-black px-2 py-1 font-bold">DESTINATION</td>
+      <td class="border border-black px-2 py-1">
+        {{if .Order.Customer.Suburb}}{{.Order.Customer.Suburb}}{{end}}
+        {{if .Order.Customer.PostCode}} &nbsp; {{.Order.Customer.PostCode}}{{end}}
+      </td>
+    </tr>
+    <tr>
+      <td class="border border-black px-2 py-1 font-bold">SENDER REF.</td>
+      <td class="border border-black px-2 py-1">{{.Order.Number}}</td>
+      <td class="border border-black px-2 py-1 font-bold"></td>
+      <td class="border border-black px-2 py-1"></td>
+      <td class="border border-black px-2 py-1 font-bold">RECEIVER REF.</td>
+      <td class="border border-black px-2 py-1">{{.Order.Customer.Reference}}</td>
+    </tr>
+  </table>
+
+  <div class="border border-black border-t-0 border-collapse">
+    <div class="flex items-stretch border-b border-black bg-gray-100">
+      <div class="px-2 py-1 font-bold border-r border-black">TYPE OF CONTRACT</div>
+      <div class="px-2 py-1 font-bold border-r border-black">LIMITED CARRIER'S RISK</div>
+      <div class="px-2 py-1 italic text-[9px]">Pursuant to the Contracts Act 2017</div>
+    </div>
+  </div>
+
+  <table class="w-full border border-black border-t-0 border-collapse">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-black px-1 py-0.5 font-bold w-[55px]">No. ITEMS</th>
+        <th class="border border-black px-1 py-0.5 font-bold text-left">TYPE OF PACKAGES &amp; DESCRIPTION OF GOODS</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[60px]">DG CLASS</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[60px]">DG UN No.</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[55px]">HEIGHT</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[55px]">WIDTH</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[55px]">LENGTH</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[80px]">CUBIC METERS</th>
+        <th class="border border-black px-1 py-0.5 font-bold w-[55px]">KGS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border border-black px-1 text-center tabular-nums">{{.NumItems}}</td>
+        <td class="border border-black px-1">PLT - Seed Products</td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1 text-right tabular-nums">{{printf "%.3f" .CubicMeters}}</td>
+        <td class="border border-black px-1 text-right tabular-nums">{{printf "%.0f" .TotalWeightKg}}</td>
+      </tr>
+      {{range .BlankRows}}
+      <tr style="height: 14px;">
+        <td class="border border-black"></td><td class="border border-black"></td><td class="border border-black"></td>
+        <td class="border border-black"></td><td class="border border-black"></td><td class="border border-black"></td>
+        <td class="border border-black"></td><td class="border border-black"></td><td class="border border-black"></td>
+      </tr>
+      {{end}}
+      <tr class="font-bold">
+        <td class="border border-black px-1 text-center tabular-nums">{{.NumItems}}</td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1"></td>
+        <td class="border border-black px-1 text-right tabular-nums">{{printf "%.2f" .CubicMeters}}</td>
+        <td class="border border-black px-1 text-right tabular-nums">{{printf "%.0f" .TotalWeightKg}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="w-full border border-black border-t-0 border-collapse">
+    <tr>
+      <td class="border border-black px-1 py-0.5 font-bold w-[110px]">Pick Up Driver</td>
+      <td class="border border-black px-1 py-0.5 w-[60px]">Date</td>
+      <td class="border border-black px-1 py-0.5 w-[60px]">Time</td>
+      <td class="border border-black px-1 py-0.5 w-[100px]">No. Received</td>
+      <td class="border border-black px-1 py-0.5">Endorsements</td>
+      <td class="border border-black px-1 py-0.5 font-bold bg-gray-100 text-right w-[80px]">CHARGES</td>
+    </tr>
+    <tr>
+      <td class="border border-black px-1 py-0.5 font-bold">Receiving Checker</td>
+      <td class="border border-black px-1 py-0.5">Date</td>
+      <td class="border border-black px-1 py-0.5">Time</td>
+      <td class="border border-black px-1 py-0.5">No. Received</td>
+      <td class="border border-black px-1 py-0.5">Endorsements</td>
+      <td class="border border-black px-1 py-0.5"></td>
+    </tr>
+    <tr>
+      <td class="border border-black px-1 py-0.5 font-bold">Loader Checker</td>
+      <td class="border border-black px-1 py-0.5">Date</td>
+      <td class="border border-black px-1 py-0.5" colspan="2">No. Received &nbsp;&nbsp; Unit Number</td>
+      <td class="border border-black px-1 py-0.5">Endorsements</td>
+      <td class="border border-black px-1 py-0.5"></td>
+    </tr>
+  </table>
+
+  <table class="w-full border border-black border-t-0 border-collapse">
+    <tr>
+      <td rowspan="2" class="border border-black px-2 py-1 align-top">
+        <div class="font-bold">DANGEROUS GOODS DECLARATION</div>
+        <div class="text-[8px] uppercase tracking-tight">The goods described herein are noxious, dangerous, hazardous, inflammable, capable of causing damage or injury.</div>
+        <div class="text-[8px] uppercase tracking-tight">If yes please attach dangerous goods declaration and detail class &amp; UN number in columns provided.</div>
+      </td>
+      <td class="border border-black px-2 py-1 text-center w-[40px]">YES</td>
+      <td class="border border-black px-2 py-1 text-center w-[40px] font-bold">X</td>
+      <td rowspan="2" class="border border-black px-2 py-1 text-center w-[180px] align-bottom">SENDER'S SIGNATURE</td>
+    </tr>
+    <tr>
+      <td class="border border-black px-2 py-1 text-center">N</td>
+      <td class="border border-black px-2 py-1"></td>
+    </tr>
+    <tr>
+      <td colspan="4" class="border border-black px-2 py-1 text-center text-[9px]">
+        THE CONTRACT FOR FREIGHTING GOODS, HEREBY EVIDENCED, IS SUBJECT TO THE CONDITIONS AVAILABLE ONLINE AT http://www.mainfreight.com/Terms
+      </td>
+    </tr>
+  </table>
+</section>
+{{end}}

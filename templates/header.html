@@ -1,0 +1,19 @@
+{{define "appheader"}}
+<header class="bg-wesco text-white sticky top-0 z-30 shadow no-print">
+  <div class="px-4 py-3 flex items-center gap-3">
+    {{if .Back}}
+      <a href="{{.Back}}" class="-ml-1 inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-wesco-dark active:bg-wesco-dark" aria-label="Back">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+    {{end}}
+    <a href="/" class="flex items-center gap-2 min-w-0">
+      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-9 w-9 object-contain bg-white rounded-md p-0.5"
+           onerror="this.style.display='none'" />
+      <div class="min-w-0">
+        <div class="text-[11px] uppercase tracking-wider text-wesco-light/80 leading-none">Wesco Seeds</div>
+        <div class="text-lg font-semibold leading-tight truncate">PicknShip{{with .Subtitle}} <span class="text-wesco-light/80 font-normal">· {{.}}</span>{{end}}</div>
+      </div>
+    </a>
+  </div>
+</header>
+{{end}}

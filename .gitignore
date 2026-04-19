@@ -1,0 +1,4 @@
+picknship
+*.log
+
+.env

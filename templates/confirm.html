@@ -1,0 +1,41 @@
+{{define "confirm"}}
+<div id="confirm-modal"
+     class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 no-print"
+     hx-on:click="if(event.target===this) this.remove()">
+  <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl p-5">
+    <h3 class="text-lg font-semibold text-gray-900">Complete order {{.Order.Number}}?</h3>
+    <p class="mt-1 text-sm text-gray-600">
+      This will create the consignment, raise the invoice in MYOB and print the
+      packing slip. You won't be able to edit picks after this.
+    </p>
+
+    <ul class="mt-4 text-sm text-gray-700 divide-y divide-gray-100 border border-gray-100 rounded-xl">
+      {{range .Rows}}
+      <li class="flex items-center justify-between px-3 py-2">
+        <span class="truncate pr-2">{{.Line.Item.Name}}</span>
+        <span class="tabular-nums shrink-0">
+          <span class="{{if lt .Picked .Line.QtyOrdered}}text-amber-700{{else if gt .Picked .Line.QtyOrdered}}text-amber-700{{else}}text-gray-900{{end}} font-semibold">{{printf "%g" .Picked}}</span>
+          <span class="text-gray-500"> / {{printf "%g" .Line.QtyOrdered}} {{.Line.Item.UOM}}</span>
+        </span>
+      </li>
+      {{end}}
+    </ul>
+
+    <div class="mt-5 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+      <button type="button"
+              class="px-4 py-3 rounded-xl font-medium text-gray-700 bg-gray-100 active:bg-gray-200"
+              hx-on:click="document.getElementById('confirm-modal').remove()">
+        Cancel
+      </button>
+      <button type="button"
+              class="px-4 py-3 rounded-xl font-semibold text-white bg-wesco active:bg-wesco-dark"
+              hx-post="/orders/{{.Order.UID}}/complete"
+              hx-target="body"
+              hx-swap="innerHTML"
+              hx-on::after-request="setTimeout(()=>window.print(), 400)">
+        Confirm &amp; print
+      </button>
+    </div>
+  </div>
+</div>
+{{end}}

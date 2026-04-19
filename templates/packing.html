@@ -1,0 +1,97 @@
+{{define "packing"}}
+{{$co := .Company}}
+<section class="page mx-auto my-4 print:my-0 bg-white shadow print:shadow-none w-[210mm] p-10 print:p-10 text-[11px] text-gray-900">
+  <header class="flex items-start justify-between gap-6">
+    <div class="border border-gray-300 p-2 w-[260px]">
+      <img src="/static/Wesco_Primary_RGB.webp" alt="Wesco Seeds" class="h-16 mx-auto object-contain" />
+    </div>
+    <div class="text-right text-[10px] leading-tight text-gray-700">
+      <div class="font-semibold text-gray-900">{{$co.Name}}</div>
+      <div>{{$co.POBox}}, {{$co.Town}} {{$co.PostCode}}</div>
+      <div>Ph {{$co.Phone}} · {{$co.Freephone}}</div>
+      <div>{{$co.Email}}</div>
+    </div>
+  </header>
+
+  <div class="mt-6 grid grid-cols-2 gap-10">
+    <div class="text-[11px] leading-snug">
+      <div class="grid grid-cols-[110px_1fr] gap-y-1">
+        <div class="font-semibold">Attention:</div>
+        <div></div>
+        <div></div>
+        <div class="font-semibold uppercase">{{.Order.Customer.CompanyName}}</div>
+        <div class="font-semibold">Phone No.</div>
+        <div>{{.Order.Customer.Phone}}</div>
+        <div class="font-semibold">Email:</div>
+        <div>{{.Order.Customer.Email}}</div>
+        <div class="font-semibold">Reference/Project:</div>
+        <div>{{.Order.Customer.Reference}}</div>
+      </div>
+
+      <div class="mt-4 font-semibold">Customer Shipping Address &amp; Contact:</div>
+      <div>{{.Order.Customer.Attention}}</div>
+      <div>{{.Order.Customer.AddressLine1}}</div>
+      {{if .Order.Customer.Suburb}}<div>{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
+    </div>
+
+    <div class="text-right">
+      <div class="text-2xl font-bold tracking-wide">FACTORY/PICKING LIST</div>
+      <div class="mt-3 text-[11px] grid grid-cols-[1fr_auto] gap-x-2 gap-y-1 text-left max-w-[260px] ml-auto">
+        <div class="font-semibold">Date:</div><div>{{.PrintDate}}</div>
+        <div class="font-semibold">Number:</div><div>{{.Order.Number}}</div>
+        <div class="font-semibold">Sales Representative:</div><div>{{.Order.SalesRepName}}</div>
+        <div class="font-semibold">Courier:</div><div>{{.Order.Service}}</div>
+        <div class="font-semibold">Courier Service:</div><div>{{.Order.ShipVia}}</div>
+      </div>
+    </div>
+  </div>
+
+  <table class="w-full mt-8 border-collapse">
+    <thead>
+      <tr class="border-b border-gray-400 text-left">
+        <th class="py-2 font-semibold w-[70px]">Qty</th>
+        <th class="py-2 font-semibold w-[180px]">Item</th>
+        <th class="py-2 font-semibold">Description</th>
+        <th class="py-2 font-semibold text-center w-[80px]">Qty<br/>Packed</th>
+        <th class="py-2 font-semibold text-center w-[80px]">Check</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Rows}}
+      <tr class="align-top {{if .MixGroupID}}mix-group{{end}}">
+        <td class="py-1 tabular-nums">{{printf "%.2f" .Line.QtyOrdered}}</td>
+        <td class="py-1 font-semibold uppercase">
+          {{if .Line.Item.IsMixParent}}<span class="bg-amber-200 px-1">{{.Line.Item.Number}}</span>{{else}}{{.Line.Item.Number}}{{end}}
+        </td>
+        <td class="py-1 uppercase">{{.Line.Item.Name}}</td>
+        <td class="py-1 text-center">
+          {{if .Line.Item.IsMixParent}}
+            <span class="text-gray-400">—</span>
+          {{else}}
+            <span class="inline-block border-b border-gray-500 w-12">&nbsp;{{if gt .Picked 0.0}}{{printf "%g" .Picked}}{{end}}</span>
+          {{end}}
+        </td>
+        <td class="py-1 text-center">
+          {{if .Line.Item.IsMixParent}}
+            <span class="text-gray-400">—</span>
+          {{else}}
+            <span class="inline-block border-b border-gray-500 w-12">&nbsp;</span>
+          {{end}}
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+
+  <div class="mt-2 text-[10px] text-gray-600 italic">Highlighted rows belong to a seed-mix BOM and are picked together.</div>
+
+  <div class="grid grid-cols-2 gap-12 mt-16 text-[11px]">
+    <div>
+      <div class="border-t border-gray-500 pt-1">Picked by / date</div>
+    </div>
+    <div>
+      <div class="border-t border-gray-500 pt-1">Checked by / date</div>
+    </div>
+  </div>
+</section>
+{{end}}

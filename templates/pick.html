@@ -1,0 +1,38 @@
+{{define "content"}}
+{{template "appheader" .}}
+<main class="px-4 pb-40 pt-4 max-w-xl mx-auto">
+  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <div class="text-xs text-gray-500">{{.Order.Number}} · Cust {{.Order.Customer.DisplayID}}</div>
+        <div class="text-lg font-semibold text-gray-900 truncate">{{.Order.Customer.CompanyName}}</div>
+        <div class="text-sm text-gray-600">{{.Order.Customer.AddressLine1}}</div>
+        {{if .Order.Customer.Suburb}}<div class="text-sm text-gray-600">{{.Order.Customer.Suburb}} {{.Order.Customer.PostCode}}</div>{{end}}
+      </div>
+    </div>
+  </section>
+
+  <h2 class="text-sm font-semibold text-gray-700 mb-2 px-1">Pick lines</h2>
+
+  <ul id="pick-lines" class="space-y-3">
+    {{range $i, $row := .Rows}}
+    {{template "pickrow" $row}}
+    {{end}}
+  </ul>
+</main>
+
+<div class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 px-4 py-3 no-print"
+     style="padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem);">
+  <div class="max-w-xl mx-auto">
+    <button type="button"
+            class="w-full bg-wesco text-white font-semibold text-lg py-4 rounded-2xl shadow active:bg-wesco-dark"
+            hx-get="/orders/{{.Order.UID}}/confirm"
+            hx-target="#modal-root"
+            hx-swap="innerHTML">
+      Complete
+    </button>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+{{end}}
