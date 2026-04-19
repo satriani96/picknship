@@ -16,12 +16,14 @@ import (
 var demoOrders []models.Order
 
 func init() {
-	day := time.Date(2026, 4, 18, 0, 0, 0, 0, time.UTC)
+	day := time.Date(2026, 4, 17, 0, 0, 0, 0, time.UTC)
+	due := time.Date(2026, 5, 20, 0, 0, 0, 0, time.UTC)
 
 	order1 := models.Order{
-		UID:    "uid-order-1",
-		Number: "SO-1001",
-		Date:   day,
+		UID:     "uid-order-1",
+		Number:  "S-6329",
+		Date:    day,
+		DueDate: due,
 		Customer: models.Customer{
 			UID:          "uid-cust-7471",
 			DisplayID:    "7471",
@@ -29,9 +31,11 @@ func init() {
 			AddressLine1: "112 Catherwoods Road",
 			Country:      "New Zealand",
 			TaxCode:      "GST",
-			Terms:        "20th of following month",
+			Terms:        "Net 20 after EOM",
 		},
-		ShipVia: "Mainfreight",
+		ShipVia:      "Mainfreight",
+		Service:      "Freight",
+		SalesRepName: "Jethro Larsen",
 		Lines: []models.OrderLine{
 			{
 				LineID:      "l-1-1",
@@ -58,31 +62,38 @@ func init() {
 	}
 
 	order2 := models.Order{
-		UID:    "uid-order-2",
-		Number: "SO-1002",
-		Date:   day,
+		UID:     "uid-order-2",
+		Number:  "S-6330",
+		Date:    day,
+		DueDate: due,
 		Customer: models.Customer{
 			UID:          "uid-cust-horti",
-			DisplayID:    "HORTI",
+			DisplayID:    "319869",
 			CompanyName:  "Horticentre Ltd",
 			AddressLine1: "211 Manukau Road",
 			Suburb:       "Pukekohe",
 			PostCode:     "2120",
 			Country:      "New Zealand",
+			Phone:        "0800 855 255",
+			Email:        "accounts@hortcentre.co.nz",
+			Reference:    "319869",
+			Attention:    "Chris",
 			TaxCode:      "GST",
-			Terms:        "20th of following month",
+			Terms:        "Net 20 after EOM",
 		},
-		ShipVia: "Mainfreight",
+		ShipVia:      "Mainfreight",
+		Service:      "Freight",
+		SalesRepName: "Jethro Larsen",
 		Lines: []models.OrderLine{
 			{
 				LineID: "l-2-1",
 				Item: models.Item{
-					UID: "i-mix1", Number: "MIX1", Name: "Mix1",
+					UID: "i-mix1", Number: "MIXED1", Name: "Mix 1",
 					UOM: "kg", SellPrice: 0.00, IsMixParent: true,
 				},
-				QtyOrdered:  200,
+				QtyOrdered:  0,
 				UnitPrice:   0.00,
-				Description: "Mix1 (Black Oats + Vetches blend)",
+				Description: "Mix 1 (Black Oats + Vetches blend)",
 				MixGroupID:  "mix-1",
 			},
 			{
@@ -93,7 +104,7 @@ func init() {
 				},
 				QtyOrdered:  140,
 				UnitPrice:   2.10,
-				Description: "Black Oats (component of Mix1)",
+				Description: "Black Oats (component of Mix 1)",
 				MixGroupID:  "mix-1",
 			},
 			{
@@ -104,7 +115,7 @@ func init() {
 				},
 				QtyOrdered:  60,
 				UnitPrice:   4.80,
-				Description: "Vetches (component of Mix1)",
+				Description: "Vetches (component of Mix 1)",
 				MixGroupID:  "mix-1",
 			},
 			{
@@ -123,7 +134,7 @@ func init() {
 			},
 			{
 				LineID:      "l-2-6",
-				Item:        models.Item{UID: "i-frt", Number: "FRT", Name: "Freight", UOM: "EA", SellPrice: 50.00},
+				Item:        models.Item{UID: "i-frt", Number: "FREIGHT", Name: "Freight", UOM: "EA", SellPrice: 50.00},
 				QtyOrdered:  1,
 				UnitPrice:   50.00,
 				Description: "Freight",
